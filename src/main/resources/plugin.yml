@@ -1,0 +1,10 @@
+name: CheatMenu
+version: '${version}'
+main: mc.tusa.cheatmenu.CheatMenu
+api-version: '1.16'
+authors: [mcTusa]
+description: Plugin for CheatMenu (server-sided). Plugin for fake cheats, made for fun.
+commands:
+  cheatgui:
+    description: Some command
+    permission: cheatmenu.cheatgui
