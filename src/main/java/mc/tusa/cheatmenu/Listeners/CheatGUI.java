@@ -14,9 +14,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class CheatGUI implements Listener {
     private final Inventory inv;
@@ -40,6 +38,9 @@ public class CheatGUI implements Listener {
     protected ItemStack createGuiItem(final Material material, final String name, final String... lore) {
         final ItemStack item = new ItemStack(material, 1);
         final ItemMeta meta = item.getItemMeta();
+
+        if (meta == null)
+            return null;
 
         meta.setDisplayName(name);
 
@@ -74,28 +75,24 @@ public class CheatGUI implements Listener {
             aimAssist = cheatmenu.cheaters.get(player).aimAssist;
         }
         catch (Exception ignored) {
-            aimAssist = false;
         }
 
         try {
             killAura = cheatmenu.cheaters.get(player).killAura;
         }
         catch (Exception ignored) {
-            killAura = false;
         }
 
         try {
             speed = cheatmenu.cheaters.get(player).speed;
         }
         catch (Exception ignored) {
-            speed = false;
         }
 
         try {
             velocity = cheatmenu.cheaters.get(player).velocity;
         }
         catch (Exception ignored) {
-            velocity = false;
         }
         switch (e.getRawSlot())
         {

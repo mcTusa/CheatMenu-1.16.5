@@ -8,6 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public final class CheatMenu extends JavaPlugin {
 
@@ -24,7 +25,7 @@ public final class CheatMenu extends JavaPlugin {
     }
 
     private void loadCommands() {
-        getCommand("cheatgui").setExecutor(cheatMenuCommand);
+        Objects.requireNonNull(getCommand("cheatgui")).setExecutor(cheatMenuCommand);
     }
 
     private void loadListeners(CheatMenu plugin) {

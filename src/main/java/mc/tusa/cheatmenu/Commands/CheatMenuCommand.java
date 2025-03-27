@@ -11,27 +11,23 @@ import mc.tusa.cheatmenu.TeleportUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class CheatMenuCommand implements CommandExecutor {
 
     CheatMenu cheatmenu;
-    //Vector prevVelocity;
 
     public CheatMenuCommand(CheatMenu cheatmenu)
     {
@@ -66,10 +62,9 @@ public class CheatMenuCommand implements CommandExecutor {
                 }
                 List<Entity> near = player.getNearbyEntities(5.0D, 5.0D, 5.0D);
                 for (Entity entity : near) {
-                    if (entity instanceof Player) {
+                    if (entity instanceof Player nearPlayer) {
                         if (entity == player)
                             continue;
-                        Player nearPlayer = (Player) entity;
                         Location centerLocation = nearPlayer.getEyeLocation();
                         centerLocation.setY(nearPlayer.getEyeLocation().getY() - 0.5);
                         ProtocolManager manager = ProtocolLibrary.getProtocolManager();
@@ -110,9 +105,7 @@ public class CheatMenuCommand implements CommandExecutor {
             @Override
             public void run() {
                 ticks++;
-                boolean cancelled = false;
-                if (!cheatmenu.cheaters.containsKey(player))
-                    cancelled = true;
+                boolean cancelled = !cheatmenu.cheaters.containsKey(player);
                 if (!cheatmenu.cheaters.get(player).speed)
                     cancelled = true;
                 if (player.getHealth() <= 0)
@@ -159,10 +152,9 @@ public class CheatMenuCommand implements CommandExecutor {
                 }
                 List<Entity> near = player.getNearbyEntities(5.0D, 5.0D, 5.0D);
                 for (Entity entity : near) {
-                    if (entity instanceof Player) {
+                    if (entity instanceof Player nearPlayer) {
                         if (entity == player)
                             continue;
-                        Player nearPlayer = (Player) entity;
                         Location centerLocation = nearPlayer.getEyeLocation();
                         centerLocation.setY(nearPlayer.getEyeLocation().getY() - 0.5);
                         ProtocolManager manager = ProtocolLibrary.getProtocolManager();
@@ -185,30 +177,16 @@ public class CheatMenuCommand implements CommandExecutor {
                         } catch (InvocationTargetException e) {
                             throw new RuntimeException(e);
                         }
-                        float hasteAmplifier = 0;
-                        if (player.getPotionEffect(PotionEffectType.FAST_DIGGING) != null)
-                        {
-                            hasteAmplifier += player.getPotionEffect(PotionEffectType.FAST_DIGGING).getAmplifier() * 0.1f;
-                        }
-                        if (player.getPotionEffect(PotionEffectType.SLOW_DIGGING) != null)
-                        {
-                            hasteAmplifier -= player.getPotionEffect(PotionEffectType.SLOW_DIGGING).getAmplifier() * 0.1f;
-                        }
-                        if (player.getAttackCooldown() + hasteAmplifier >= 0.9) {//ticks >= getDelay(player.getInventory().getItemInMainHand())) {
-                            player.swingMainHand();
-                            player.resetCooldown();
-                            CalculateDamage.CalculateItemAttackDamage(player, nearPlayer, player.getInventory().getItemInMainHand());
+                        if (player.getAttackCooldown() >= 0.9) {
+                            CalculateDamage.attackPlayer(player, nearPlayer);
+
+                            ((CraftPlayer)player).getHandle().resetAttackCooldown();
                             ticks = 0;
                         }
                     }
                 }
             }
         }.runTaskTimer(cheatmenu, 0, 1);
-    }
-
-    public static boolean canCrit(Player player)
-    {
-        return player.getVelocity().getY() < 0 && !player.isOnGround() && !player.getLocation().subtract(0, 0.1, 0).getBlock().getType().equals(Material.LADDER) && !player.getLocation().subtract(0, 0.1, 0).getBlock().getType().equals(Material.VINE) && !player.getLocation().subtract(0, 0.1, 0).getBlock().getType().equals(Material.WATER) && player.getPotionEffect(PotionEffectType.BLINDNESS) == null && player.getPotionEffect(PotionEffectType.SLOW_FALLING) == null && player.getVehicle() == null && !player.isSprinting() && !player.isFlying();
     }
 
     @Deprecated
